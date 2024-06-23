@@ -2,23 +2,24 @@
 
 > A Gemini-to-Gopher Proxy
 
-Momoka is a Gopher proxy that sits in between Gopher clients and Gemini servers.
-It translates any Gemini requests containing Gemtext into Gopher-compatible
-responses.
+Momoka is a [Gopher](https://www.rfc-editor.org/info/rfc1436) proxy that sits in
+between Gopher clients and [Gemini](https://fuwn.me/proxy/geminiprotocol.net/)
+servers. It translates any Gemini requests containing Gemtext into
+Gopher-compatible responses.
 
-Momoka is written in under 300 (280) lines of code and written in the functional
-[Gleam](https://gleam.run). It's designed to be small and simple.
+Momoka is written in under 300 (298) lines of code in the functional
+[Gleam](https://gleam.run) programming language. It's designed to be small and
+simple.
 
 <br>
 
 For reference of accuracy, here is a screenshot of the
-[bollux](https://tildegit.org/acdw/bollux) client displaying both the Gopher and
-the Gemini responses side-by-side. It's practically the same output, save for the
-line wrapping.
+[Lagrange](https://gmi.skyjake.fi/lagrange/) client displaying both the Gopher
+and the Gemini responses side-by-side. It's **literally** the same output.
 
 <p align="center">
   <br>
-  <img src="https://i.imgur.com/GyF0pEJ.png" width="75%">
+  <img src="https://i.imgur.com/07aLdRj.png" width="75%">
 </p>
 
 ## Usage
