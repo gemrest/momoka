@@ -4,7 +4,6 @@ import gleam/bit_array
 import gleam/bytes_builder
 import gleam/http/request
 import gleam/httpc
-import gleam/string
 import gopher
 
 pub fn get_gemtext_from_capsule(message) {
@@ -28,15 +27,15 @@ pub fn get_gemtext_from_capsule(message) {
       case path {
         "/\r\n" | "\r\n" | "\n" -> request.to(gemini_proxy <> root_capsule)
         "/proxy/" <> route ->
-          request.to(gemini_proxy <> string.replace(route, "\r\n", ""))
+          request.to(gemini_proxy <> gopher.trim_gopher_line_ending(route))
         "/" <> path ->
           request.to(
             gemini_proxy
             <> root_capsule
             <> "/"
-            <> string.replace(path, "\r\n", ""),
+            <> gopher.trim_gopher_line_ending(path),
           )
-        _ -> request.to(root_capsule <> string.replace(path, "\r\n", ""))
+        _ -> request.to(root_capsule <> gopher.trim_gopher_line_ending(path))
       }
     }
     _ -> request.to(root_capsule)
