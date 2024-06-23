@@ -9,6 +9,18 @@ responses.
 Momoka is written in under 300 (280) lines of code and written in the functional
 [Gleam](https://gleam.run). It's designed to be small and simple.
 
+<br>
+
+For reference of accuracy, here is a screenshot of the
+[bollux](https://tildegit.org/acdw/bollux) client displaying both the Gopher and
+the Gemini responses side-by-side. It's practically the same output, save for the
+line wrapping.
+
+<p align="center">
+  <br>
+  <img src="https://i.imgur.com/GyF0pEJ.png" width="75%">
+</p>
+
 ## Usage
 
 If you'd like to test out a production deployment of Momoka, you can visit
