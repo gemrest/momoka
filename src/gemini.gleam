@@ -26,7 +26,7 @@ pub fn get_gemtext_from_capsule(message) {
   let assert Ok(request) = case bit_array.to_string(message) {
     Ok(path) -> {
       case path {
-        "/\r\n" | "\r\n" -> request.to(gemini_proxy <> root_capsule)
+        "/\r\n" | "\r\n" | "\n" -> request.to(gemini_proxy <> root_capsule)
         "/proxy/" <> route ->
           request.to(gemini_proxy <> string.replace(route, "\r\n", ""))
         "/" <> path ->
