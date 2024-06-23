@@ -43,6 +43,6 @@ pub fn get_gemtext_from_capsule(message) {
   let assert Ok(response) = httpc.send(request)
 
   bytes_builder.from_string(
-    gopher.gemtext_to_gopher(parse.parse_gemtext_raw(response.body)) <> "\r\n",
+    gopher.gemtext_to_gopher(parse.parse_gemtext_raw(response.body)),
   )
 }

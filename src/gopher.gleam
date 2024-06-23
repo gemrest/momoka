@@ -8,23 +8,27 @@ pub fn trim_gopher_line_ending(line) {
 }
 
 pub fn gemtext_to_gopher(gemtext: List(Gemtext)) -> String {
-  gemtext
-  |> list.map(fn(line) {
-    case line {
-      gemtext.PreformattedLine(content) ->
-        content
-        |> string.split("\n")
-        |> list.map(fn(line) {
-          case line {
-            "```" -> ""
-            _ -> "i`` " <> line
-          }
-        })
-        |> string.join("\n")
-      _ -> gemtext_line_to_gopher_line(line)
-    }
-  })
-  |> string.join("\n")
+  {
+    gemtext
+    |> list.map(fn(line) {
+      case line {
+        gemtext.PreformattedLine(content) ->
+          content
+          |> string.split("\n")
+          |> list.map(fn(line) {
+            case line {
+              "```" -> ""
+              _ -> "i`` " <> line
+            }
+          })
+          |> string.join("\n")
+        _ -> gemtext_line_to_gopher_line(line)
+      }
+    })
+    |> string.join("\r\n")
+    <> "."
+  }
+  |> string.replace("\r\n\r\n.", "\r\n.")
 }
 
 fn extract_domain_from_url(url: String) -> String {
