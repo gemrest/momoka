@@ -3,6 +3,10 @@ import gleam/list
 import gleam/option.{None, Some}
 import gleam/string
 
+pub fn trim_gopher_line_ending(line) {
+  string.replace(line, "\r", "") |> string.replace("\n", "")
+}
+
 pub fn gemtext_to_gopher(gemtext: List(Gemtext)) -> String {
   gemtext
   |> list.map(fn(line) {
