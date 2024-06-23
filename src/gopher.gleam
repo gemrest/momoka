@@ -7,6 +7,10 @@ pub fn trim_gopher_line_ending(line) {
   string.replace(line, "\r", "") |> string.replace("\n", "")
 }
 
+fn terminate_text_line(line) {
+  line <> "\tnull.host\t1\t70"
+}
+
 pub fn gemtext_to_gopher(gemtext: List(Gemtext)) -> String {
   {
     gemtext
@@ -29,6 +33,14 @@ pub fn gemtext_to_gopher(gemtext: List(Gemtext)) -> String {
     <> "."
   }
   |> string.replace("\r\n\r\n.", "\r\n.")
+  |> string.split("\r\n")
+  |> list.map(fn(line) {
+    case line {
+      "" -> "i" |> terminate_text_line
+      _ -> line
+    }
+  })
+  |> string.join("\r\n")
 }
 
 fn extract_domain_from_url(url: String) -> String {
@@ -55,16 +67,17 @@ fn gopher_link_line(to, description) {
 
 pub fn gemtext_line_to_gopher_line(line: Gemtext) -> String {
   case line {
-    gemtext.Text(text) -> "i" <> text
+    gemtext.Text(text) -> { "i" <> text } |> terminate_text_line
     gemtext.Link(to, description) ->
       case description {
         Some(description) -> gopher_link_line(to, description)
         None -> gopher_link_line(to, to)
       }
     gemtext.Heading(text, depth) ->
-      "i" <> list.repeat("#", depth) |> string.join("") <> " " <> text
-    gemtext.ListLine(text) -> "i* " <> text
-    gemtext.BlockquoteLine(text) -> "i> " <> text
+      { "i" <> list.repeat("#", depth) |> string.join("") <> " " <> text }
+      |> terminate_text_line
+    gemtext.ListLine(text) -> { "i* " <> text } |> terminate_text_line
+    gemtext.BlockquoteLine(text) -> { "i> " <> text } |> terminate_text_line
     _ -> ""
   }
 }
