@@ -4,7 +4,9 @@ import gleam/option.{None, Some}
 import gleam/string
 
 pub fn trim_gopher_line_ending(line) {
-  string.replace(line, "\r", "") |> string.replace("\n", "")
+  line
+  |> string.replace("\n", "")
+  |> string.replace("\r", "")
 }
 
 fn terminate_text_line(line) {
@@ -59,7 +61,12 @@ fn gopher_link_line(to, description) {
   "h"
   <> description
   <> "\tURL:"
-  <> to
+  <> {
+    case string.starts_with(to, "/") {
+      True -> "/1" <> to
+      False -> to
+    }
+  }
   <> "\t"
   <> extract_domain_from_url(to)
   <> "\t70"
