@@ -1,6 +1,6 @@
 # 🏕️ Momoka
 
-> A Gemini-to-Gopher Proxy
+> A Gemini-to-Gopher proxy that bridges the smolweb to even more smolweb
 
 Momoka is a [Gopher](https://www.rfc-editor.org/info/rfc1436) proxy that sits in
 between Gopher clients and [Gemini](https://fuwn.me/proxy/geminiprotocol.net/)
