@@ -23,31 +23,51 @@ pub fn get_gemtext_from_capsule(message) {
     Ok(proxy) -> proxy
     _ -> "https://fuwn.me/raw/"
   }
-  let assert Ok(request) = case bit_array.to_string(message) {
-    Ok(path) -> {
-      case string.split(path, "/") {
-        ["/\r\n"] | ["\r\n"] | ["\n"] ->
-          request.to(gemini_proxy <> root_capsule)
-        ["", "proxy", ..route] ->
-          request.to(
-            gemini_proxy
-            <> gopher.trim_gopher_line_ending(string.join(route, "/")),
+
+  case
+    case bit_array.to_string(message) {
+      Ok(path) -> {
+        case string.split(path, "/") {
+          ["/\r\n"] | ["\r\n"] | ["\n"] ->
+            request.to(gemini_proxy <> root_capsule)
+          ["", "proxy", ..route] ->
+            request.to(
+              gemini_proxy
+              <> gopher.trim_gopher_line_ending(string.join(route, "/")),
+            )
+          ["", ..path] ->
+            request.to(
+              gemini_proxy
+              <> root_capsule
+              <> "/"
+              <> gopher.trim_gopher_line_ending(string.join(path, "/")),
+            )
+          _ -> request.to(root_capsule <> gopher.trim_gopher_line_ending(path))
+        }
+      }
+      _ -> request.to(root_capsule)
+    }
+  {
+    Ok(request) -> {
+      case httpc.send(request) {
+        Ok(response) ->
+          bytes_builder.from_string(
+            gopher.gemtext_to_gopher(parse.parse_gemtext_raw(response.body))
+            <> "\r\n",
           )
-        ["", ..path] ->
-          request.to(
-            gemini_proxy
-            <> root_capsule
-            <> "/"
-            <> gopher.trim_gopher_line_ending(string.join(path, "/")),
-          )
-        _ -> request.to(root_capsule <> gopher.trim_gopher_line_ending(path))
+        Error(error) -> error_response(error)
       }
     }
-    _ -> request.to(root_capsule)
+    Error(error) -> error_response(error)
   }
-  let assert Ok(response) = httpc.send(request)
+}
 
+fn error_response(error) {
   bytes_builder.from_string(
-    gopher.gemtext_to_gopher(parse.parse_gemtext_raw(response.body)) <> "\r\n",
+    {
+      { "iAn error has occurred: " <> string.inspect(error) }
+      |> gopher.terminate_text_line
+    }
+    <> "\r\n",
   )
 }
