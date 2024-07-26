@@ -9,7 +9,7 @@ pub fn trim_gopher_line_ending(line) {
   |> string.replace("\r", "")
 }
 
-fn terminate_text_line(line) {
+pub fn terminate_text_line(line) {
   line <> "\tnull.host\t1\t70"
 }
 
