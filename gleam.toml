@@ -3,7 +3,7 @@
 
 name = "momoka"
 version = "1.0.3"
-gleam = ">= 0.2.1"
+gleam = ">= 1.3.0"
 description = "Gemini-to-Gopher Proxy"
 licenses = ["GPL-3.0-only"]
 repository = { type = "github", user = "Fuwn", repo = "momoka" }

@@ -2,7 +2,9 @@ import gemtext/gemtext.{type Gemtext}
 import gleam/list
 import gleam/string
 
-pub fn combine_adjacent_blockquote_lines(lines: List(Gemtext)) -> List(Gemtext) {
+pub fn combine_adjacent_blockquote_lines(
+  lines: List(Gemtext),
+) -> List(Gemtext) {
   case lines {
     [gemtext.BlockquoteLine(a), gemtext.BlockquoteLine(b), ..rest] ->
       combine_adjacent_blockquote_lines([

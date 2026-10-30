@@ -6,7 +6,7 @@ all:
 docker:
   ARG tag=latest
 
-  FROM ghcr.io/gleam-lang/gleam:v1.2.1-erlang-alpine
+  FROM ghcr.io/gleam-lang/gleam:v1.19.2-erlang-alpine
 
   COPY +build/erlang-shipment/ /momoka/erlang-shipment/
 
@@ -19,7 +19,7 @@ docker:
   SAVE IMAGE --push fuwn/momoka:${tag}
 
 deps:
-  FROM ghcr.io/gleam-lang/gleam:v1.2.0-erlang-alpine
+  FROM ghcr.io/gleam-lang/gleam:v1.19.2-erlang-alpine
 
   RUN apk add --no-cache build-base
 
