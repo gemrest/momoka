@@ -9,7 +9,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
-  outputs = { self, nixpkgs, flake-utils, nix-gleam, gitignore, ... }:
+  outputs = { nixpkgs, flake-utils, nix-gleam, gitignore, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs {
@@ -23,12 +23,9 @@
       {
         packages.default = pkgs.buildGleamApplication {
           src = gitignoreSource ./.;
-          rebar3Package = pkgs.rebar3WithPlugins {
-            plugins = with pkgs.beamPackages; [ pc ];
-          };
         };
-        devShell = pkgs.mkShell {
-          buildInputs = [ pkgs.gleam pkgs.rebar3 ];
+        devShells.default = pkgs.mkShell {
+          buildInputs = [ pkgs.gleam pkgs.erlang ];
         };
       }
     );
