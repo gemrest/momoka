@@ -8,7 +8,7 @@ import gleam/option.{None}
 import gleam/otp/actor
 import gleam/string
 import glisten.{Packet}
-import tcp
+import glisten/tcp
 
 pub fn main() {
   let assert Ok(_) =
@@ -18,7 +18,7 @@ pub fn main() {
         let assert Packet(message) = message
         let assert Ok(_) =
           glisten.send(connection, gemini.get_gemtext_from_capsule(message))
-        let assert Ok(_) = tcp.close_connection(connection)
+        let assert Ok(_) = tcp.shutdown(connection.socket)
 
         io.println(
           "request: "
