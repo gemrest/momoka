@@ -3,7 +3,7 @@ import gleam/list
 import gleam/option.{None, Some}
 import gleam/string
 
-pub fn trim_gopher_line_ending(line) {
+pub fn trim_line_ending(line) {
   line
   |> string.replace("\n", "")
   |> string.replace("\r", "")
