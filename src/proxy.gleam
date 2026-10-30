@@ -96,7 +96,7 @@ fn render_response(
     gemini.Input(prompt) -> {
       let search = "/7" <> selector(config, uri.Uri(..url, query: None))
 
-      Ok(gopher.gemtext_to_gopher([gemtext.Link(search, Some(prompt))]))
+      Ok(gopher.gemtext_to_gopher([gemtext.Link(search, prompt)]))
     }
     gemini.Redirect(_) -> Error("The capsule redirected too many times.")
     gemini.Failure(status:, message:) ->
@@ -128,10 +128,7 @@ fn parse_body(
 fn route_link(config: Config, page: Uri, line: Gemtext) -> Gemtext {
   case line {
     gemtext.Link(to, title) ->
-      gemtext.Link(
-        link_target(config, page, to),
-        Some(option.unwrap(title, to)),
-      )
+      gemtext.Link(link_target(config, page, to), title)
     _ -> line
   }
 }

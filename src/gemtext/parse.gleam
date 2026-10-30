@@ -1,6 +1,5 @@
 import gemtext/gemtext.{type Gemtext}
 import gleam/list
-import gleam/option.{None, Some}
 import gleam/string
 
 pub fn parse_gemtext(text: String) -> List(Gemtext) {
@@ -40,7 +39,7 @@ fn parse_link(link: String) -> Gemtext {
   let link = link |> string.replace("\t", " ") |> string.trim
 
   case string.split_once(link, " ") {
-    Ok(#(to, title)) -> gemtext.Link(to, Some(string.trim_start(title)))
-    Error(Nil) -> gemtext.Link(link, None)
+    Ok(#(to, title)) -> gemtext.Link(to, string.trim_start(title))
+    Error(Nil) -> gemtext.Link(link, link)
   }
 }

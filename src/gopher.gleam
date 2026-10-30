@@ -32,8 +32,7 @@ fn menu(lines: List(String)) -> String {
 fn gemtext_to_menu_lines(line: Gemtext) -> List(String) {
   case line {
     gemtext.Text(text) -> [info_line(text)]
-    gemtext.Link(to, Some(title)) -> [link_line(to, title)]
-    gemtext.Link(to, _) -> [link_line(to, to)]
+    gemtext.Link(to, title) -> [link_line(to, title)]
     gemtext.Heading(text, depth) -> [
       info_line(string.repeat("#", depth) <> " " <> text),
     ]

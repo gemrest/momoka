@@ -1,6 +1,5 @@
 import gemtext/gemtext
 import gemtext/parse
-import gleam/option.{None, Some}
 import gleeunit/should
 
 pub fn link_with_title_test() {
@@ -9,18 +8,18 @@ pub fn link_with_title_test() {
   )
   |> should.equal(gemtext.Link(
     "https://example.com/",
-    Some("This is a link with a title."),
+    "This is a link with a title.",
   ))
 }
 
 pub fn link_without_title_test() {
   parse.parse_gemtext_line("=> https://example.com/")
-  |> should.equal(gemtext.Link("https://example.com/", None))
+  |> should.equal(gemtext.Link("https://example.com/", "https://example.com/"))
 }
 
 pub fn link_with_irregular_whitespace_test() {
   parse.parse_gemtext_line("=>https://example.com/ \t Title")
-  |> should.equal(gemtext.Link("https://example.com/", Some("Title")))
+  |> should.equal(gemtext.Link("https://example.com/", "Title"))
 }
 
 pub fn quote_test() {
