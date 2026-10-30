@@ -5,10 +5,7 @@ pub type Gemtext {
   Link(to: String, title: Option(String))
   Heading(String, depth: Int)
   ListLine(String)
-  List(List(List(String)))
   BlockquoteLine(String)
-  Blockquote(String)
-  Preformatted(description: Option(String), body: String)
   PreformattedLine(String)
   Whitespace
 }

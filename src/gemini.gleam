@@ -52,7 +52,7 @@ pub fn get_gemtext_from_capsule(message) {
       case httpc.send(request) {
         Ok(response) ->
           bytes_builder.from_string(
-            gopher.gemtext_to_gopher(parse.parse_gemtext_raw(response.body))
+            gopher.gemtext_to_gopher(parse.parse_gemtext(response.body))
             <> "\r\n",
           )
         Error(error) -> error_response(error)
