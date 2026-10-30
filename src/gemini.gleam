@@ -28,8 +28,7 @@ pub fn get_gemtext_from_capsule(message) {
     case bit_array.to_string(message) {
       Ok(path) -> {
         case string.split(path, "/") {
-          ["/\r\n"] | ["\r\n"] | ["\n"] ->
-            request.to(gemini_proxy <> root_capsule)
+          ["\r\n"] | ["\n"] -> request.to(gemini_proxy <> root_capsule)
           ["", "proxy", ..route] ->
             request.to(
               gemini_proxy
@@ -42,10 +41,10 @@ pub fn get_gemtext_from_capsule(message) {
               <> "/"
               <> gopher.trim_gopher_line_ending(string.join(path, "/")),
             )
-          _ -> request.to(root_capsule <> gopher.trim_gopher_line_ending(path))
+          _ -> Error(Nil)
         }
       }
-      _ -> request.to(root_capsule)
+      _ -> Error(Nil)
     }
   {
     Ok(request) -> {
