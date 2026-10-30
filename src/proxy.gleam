@@ -1,6 +1,5 @@
 import gemini
-import gemtext/gemtext.{type Gemtext}
-import gemtext/parse
+import gemtext.{type Gemtext}
 import gleam/int
 import gleam/list
 import gleam/option.{None, Some}
@@ -114,7 +113,7 @@ fn parse_body(
   body: String,
 ) -> Result(List(Gemtext), String) {
   case mime_type {
-    "" | "text/gemini" <> _ -> Ok(parse.parse_gemtext(body))
+    "" | "text/gemini" <> _ -> Ok(gemtext.parse(body))
     "text/" <> _ ->
       body
       |> string.replace("\r\n", "\n")

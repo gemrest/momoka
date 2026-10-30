@@ -1,10 +1,10 @@
-import gemtext/parse
+import gemtext
 import gleeunit/should
 import gopher
 
 fn render(text: String) -> String {
   text
-  |> parse.parse_gemtext
+  |> gemtext.parse
   |> gopher.gemtext_to_gopher
 }
 

@@ -1,4 +1,4 @@
-import gemtext/gemtext.{type Gemtext}
+import gemtext.{type Gemtext}
 import gleam/int
 import gleam/list
 import gleam/option.{Some}
