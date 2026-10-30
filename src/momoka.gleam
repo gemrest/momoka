@@ -13,7 +13,7 @@ import proxy
 
 pub fn main() {
   let config =
-    proxy.Config(root_capsule: envoy.get("ROOT") |> result.unwrap("fuwn.me"))
+    proxy.Config(root_capsule: envoy.get("ROOT") |> result.unwrap("fuwn.net"))
   let port = case envoy.get("PORT") {
     Ok(port) -> {
       let assert Ok(port) = int.parse(port) as "PORT must be an integer"
