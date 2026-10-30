@@ -1,12 +1,9 @@
 VERSION 0.8
 
-all:
-  BUILD +docker
-
 docker:
   ARG tag=latest
 
-  FROM ghcr.io/gleam-lang/gleam:v1.19.2-erlang-alpine
+  FROM erlang:29-alpine
 
   COPY +build/erlang-shipment/ /momoka/erlang-shipment/
 
@@ -18,22 +15,14 @@ docker:
 
   SAVE IMAGE --push fuwn/momoka:${tag}
 
-deps:
-  FROM ghcr.io/gleam-lang/gleam:v1.19.2-erlang-alpine
-
-  RUN apk add --no-cache build-base
-
 build:
-  FROM +deps
+  FROM ghcr.io/gleam-lang/gleam:v1.19.2-erlang-alpine
 
   WORKDIR /momoka/
 
   COPY src/ /momoka/src/
-  COPY gleam.toml /momoka/
-  COPY manifest.toml /momoka/
+  COPY gleam.toml manifest.toml /momoka/
 
-  RUN gleam build \
-    && cd build/ \
-    && gleam export erlang-shipment
+  RUN gleam export erlang-shipment
 
   SAVE ARTIFACT /momoka/build/erlang-shipment/
