@@ -22,7 +22,7 @@ pub fn respond(config: Config, selector: String) -> String {
   }
 }
 
-fn capsule_url(config: Config, selector: String) -> Result(String, Nil) {
+pub fn capsule_url(config: Config, selector: String) -> Result(String, Nil) {
   case selector {
     "" -> Ok(config.gemini_proxy <> config.root_capsule)
     "/proxy/" <> capsule -> Ok(config.gemini_proxy <> capsule)
