@@ -31,7 +31,7 @@ fn parse_lines(lines: List(String), parsed: List(Gemtext)) -> List(Gemtext) {
   }
 }
 
-pub fn parse_line(line: String) -> Gemtext {
+fn parse_line(line: String) -> Gemtext {
   case line {
     "=>" <> link -> parse_link(link)
     "###" <> text -> Heading(string.trim(text), 3)

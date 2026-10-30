@@ -2,52 +2,51 @@ import gemtext
 import gleeunit/should
 
 pub fn link_with_title_test() {
-  gemtext.parse_line("=> https://example.com/ This is a link with a title.")
-  |> should.equal(gemtext.Link(
-    "https://example.com/",
-    "This is a link with a title.",
-  ))
+  gemtext.parse("=> https://example.com/ This is a link with a title.")
+  |> should.equal([
+    gemtext.Link("https://example.com/", "This is a link with a title."),
+  ])
 }
 
 pub fn link_without_title_test() {
-  gemtext.parse_line("=> https://example.com/")
-  |> should.equal(gemtext.Link("https://example.com/", "https://example.com/"))
+  gemtext.parse("=> https://example.com/")
+  |> should.equal([gemtext.Link("https://example.com/", "https://example.com/")])
 }
 
 pub fn link_with_irregular_whitespace_test() {
-  gemtext.parse_line("=>https://example.com/ \t Title")
-  |> should.equal(gemtext.Link("https://example.com/", "Title"))
+  gemtext.parse("=>https://example.com/ \t Title")
+  |> should.equal([gemtext.Link("https://example.com/", "Title")])
 }
 
 pub fn quote_test() {
-  gemtext.parse_line("> This is a quote.")
-  |> should.equal(gemtext.Quote("This is a quote."))
+  gemtext.parse("> This is a quote.")
+  |> should.equal([gemtext.Quote("This is a quote.")])
 }
 
 pub fn quote_without_space_test() {
-  gemtext.parse_line(">This is a quote.")
-  |> should.equal(gemtext.Quote("This is a quote."))
+  gemtext.parse(">This is a quote.")
+  |> should.equal([gemtext.Quote("This is a quote.")])
 }
 
 pub fn list_item_test() {
-  gemtext.parse_line("* This is a list item.")
-  |> should.equal(gemtext.ListItem("This is a list item."))
+  gemtext.parse("* This is a list item.")
+  |> should.equal([gemtext.ListItem("This is a list item.")])
 }
 
 pub fn heading_test() {
-  gemtext.parse_line("# This is a level one heading.")
-  |> should.equal(gemtext.Heading("This is a level one heading.", 1))
+  gemtext.parse("# This is a level one heading.")
+  |> should.equal([gemtext.Heading("This is a level one heading.", 1)])
 
-  gemtext.parse_line("## This is a level two heading.")
-  |> should.equal(gemtext.Heading("This is a level two heading.", 2))
+  gemtext.parse("## This is a level two heading.")
+  |> should.equal([gemtext.Heading("This is a level two heading.", 2)])
 
-  gemtext.parse_line("### This is a level three heading.")
-  |> should.equal(gemtext.Heading("This is a level three heading.", 3))
+  gemtext.parse("### This is a level three heading.")
+  |> should.equal([gemtext.Heading("This is a level three heading.", 3)])
 }
 
 pub fn heading_keeps_inner_hashes_test() {
-  gemtext.parse_line("# C# Tips")
-  |> should.equal(gemtext.Heading("C# Tips", 1))
+  gemtext.parse("# C# Tips")
+  |> should.equal([gemtext.Heading("C# Tips", 1)])
 }
 
 pub fn preformatted_block_test() {
