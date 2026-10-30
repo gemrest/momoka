@@ -12,7 +12,7 @@ pub type Config {
 pub fn respond(config: Config, selector: String) -> String {
   case result.try(capsule_url(config, selector), request.to) {
     Ok(request) -> {
-      case httpc.send(request) {
+      case httpc.send(request.set_header(request, "user-agent", "momoka")) {
         Ok(response) ->
           gopher.gemtext_to_gopher(parse.parse_gemtext(response.body))
         Error(error) -> gopher.error_menu(string.inspect(error))
