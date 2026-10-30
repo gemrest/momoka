@@ -7,9 +7,8 @@ between Gopher clients and [Gemini](https://fuwn.me/proxy/geminiprotocol.net/)
 servers. It translates any Gemini requests containing Gemtext into
 Gopher-compatible responses.
 
-Momoka is written in under 350 (345) lines of code in the functional
-[Gleam](https://gleam.run) programming language. It's designed to be small and
-simple.
+Momoka is written in the functional [Gleam](https://gleam.run) programming
+language. It's designed to be small and simple.
 
 <br>
 
