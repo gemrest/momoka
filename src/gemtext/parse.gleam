@@ -31,7 +31,7 @@ pub fn parse_gemtext_line(line: String) -> Gemtext {
     "##" <> text -> gemtext.Heading(string.trim(text), 2)
     "#" <> text -> gemtext.Heading(string.trim(text), 1)
     "* " <> text -> gemtext.ListItem(text)
-    ">" <> text -> gemtext.Quote(string.trim_left(text))
+    ">" <> text -> gemtext.Quote(string.trim_start(text))
     _ -> gemtext.Text(line)
   }
 }
@@ -40,7 +40,7 @@ fn parse_link(link: String) -> Gemtext {
   let link = link |> string.replace("\t", " ") |> string.trim
 
   case string.split_once(link, " ") {
-    Ok(#(to, title)) -> gemtext.Link(to, Some(string.trim_left(title)))
+    Ok(#(to, title)) -> gemtext.Link(to, Some(string.trim_start(title)))
     Error(Nil) -> gemtext.Link(link, None)
   }
 }

@@ -1,14 +1,13 @@
 import envoy
 import gleam/bit_array
-import gleam/bytes_builder
+import gleam/bytes_tree
 import gleam/erlang/process
 import gleam/int
 import gleam/io
 import gleam/option.{None}
-import gleam/otp/actor
 import gleam/result
 import glisten.{Packet}
-import glisten/tcp
+import glisten/transport
 import gopher
 import proxy
 
@@ -31,13 +30,14 @@ pub fn main() {
     Error(Nil) -> gopher.default_port
   }
   let assert Ok(_) =
-    glisten.handler(fn(_connection) { #(config, None) }, handle_message)
-    |> glisten.serve(port)
+    glisten.new(fn(_connection) { #(config, None) }, handle_message)
+    |> glisten.bind("0.0.0.0")
+    |> glisten.start(port)
 
   process.sleep_forever()
 }
 
-fn handle_message(message, config, connection: glisten.Connection(a)) {
+fn handle_message(config, message, connection: glisten.Connection(a)) {
   let assert Packet(message) = message
   let selector =
     bit_array.to_string(message) |> result.map(gopher.trim_line_ending)
@@ -45,9 +45,8 @@ fn handle_message(message, config, connection: glisten.Connection(a)) {
     Ok(selector) -> proxy.respond(config, selector)
     Error(Nil) -> gopher.error_menu("The selector is not valid UTF-8.")
   }
-  let assert Ok(_) =
-    glisten.send(connection, bytes_builder.from_string(response))
-  let assert Ok(_) = tcp.shutdown(connection.socket)
+  let assert Ok(_) = glisten.send(connection, bytes_tree.from_string(response))
+  let assert Ok(_) = transport.shutdown(connection.transport, connection.socket)
 
   io.println(
     "request: "
@@ -58,5 +57,5 @@ fn handle_message(message, config, connection: glisten.Connection(a)) {
     },
   )
 
-  actor.continue(config)
+  glisten.continue(config)
 }

@@ -28,9 +28,9 @@ fn fetch_gemtext(config: Config, selector: String) -> Result(String, String) {
     |> result.replace_error("The capsule address is not valid."),
   )
   use response <- result.try(
-    request
-    |> request.set_header("user-agent", "momoka")
-    |> httpc.send
+    httpc.configure()
+    |> httpc.follow_redirects(True)
+    |> httpc.dispatch(request.set_header(request, "user-agent", "momoka"))
     |> result.map_error(fn(error) {
       io.println("upstream error: " <> string.inspect(error))
 
