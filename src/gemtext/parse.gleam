@@ -1,39 +1,46 @@
 import gemtext/gemtext.{type Gemtext}
-import gemtext/heading
-import gemtext/preformatted_block
 import gleam/list
 import gleam/option.{None, Some}
 import gleam/string
 
-pub fn parse_gemtext_line(line) -> Gemtext {
-  let trimmed_line = string.trim(line)
+pub fn parse_gemtext(text: String) -> List(Gemtext) {
+  text
+  |> string.replace("\r\n", "\n")
+  |> string.split("\n")
+  |> parse_lines([])
+}
 
-  case string.split(trimmed_line, " ") {
-    ["=>", to] -> gemtext.Link(to, None)
-    ["=>", to, ..title] -> gemtext.Link(to, Some(string.join(title, " ")))
-    [">", ..rest] ->
-      gemtext.BlockquoteLine(string.trim_left(string.join(rest, " ")))
-    ["*", ..rest] -> gemtext.ListLine(string.trim_left(string.join(rest, " ")))
-    [""] -> gemtext.Whitespace
-    _ -> {
-      case string.to_graphemes(trimmed_line) {
-        ["#", ..rest] ->
-          gemtext.Heading(
-            string.trim_left(string.replace(string.join(rest, ""), "#", "")),
-            heading.count_leading_hashes(line),
-          )
-        ["`", "`", "`", ..rest] ->
-          gemtext.PreformattedLine(string.trim_left(
-            "```\n" <> string.join(rest, ""),
-          ))
-        _ -> gemtext.Text(line)
-      }
+fn parse_lines(lines: List(String), parsed: List(Gemtext)) -> List(Gemtext) {
+  case lines {
+    // The empty string after a document's final newline is not a line.
+    [] | [""] -> list.reverse(parsed)
+    ["```" <> _, ..rest] -> {
+      let #(body, rest) =
+        list.split_while(rest, fn(line) { !string.starts_with(line, "```") })
+
+      parse_lines(list.drop(rest, 1), [gemtext.Preformatted(body), ..parsed])
     }
+    [line, ..rest] -> parse_lines(rest, [parse_gemtext_line(line), ..parsed])
   }
 }
 
-pub fn parse_gemtext(text: String) -> List(Gemtext) {
-  string.split(text, "\n")
-  |> preformatted_block.group_adjacent_preformatted_block_lines
-  |> list.map(parse_gemtext_line)
+pub fn parse_gemtext_line(line: String) -> Gemtext {
+  case line {
+    "=>" <> link -> parse_link(link)
+    "###" <> text -> gemtext.Heading(string.trim(text), 3)
+    "##" <> text -> gemtext.Heading(string.trim(text), 2)
+    "#" <> text -> gemtext.Heading(string.trim(text), 1)
+    "* " <> text -> gemtext.ListItem(text)
+    ">" <> text -> gemtext.Quote(string.trim_left(text))
+    _ -> gemtext.Text(line)
+  }
+}
+
+fn parse_link(link: String) -> Gemtext {
+  let link = link |> string.replace("\t", " ") |> string.trim
+
+  case string.split_once(link, " ") {
+    Ok(#(to, title)) -> gemtext.Link(to, Some(string.trim_left(title)))
+    Error(Nil) -> gemtext.Link(link, None)
+  }
 }

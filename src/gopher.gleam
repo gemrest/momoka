@@ -18,15 +18,9 @@ pub fn gemtext_to_gopher(gemtext: List(Gemtext)) -> String {
     gemtext
     |> list.map(fn(line) {
       case line {
-        gemtext.PreformattedLine(content) ->
-          content
-          |> string.split("\n")
-          |> list.map(fn(line) {
-            case line {
-              "```" -> ""
-              _ -> "i`` " <> line
-            }
-          })
+        gemtext.Preformatted(lines) ->
+          ["", ..list.map(lines, fn(line) { "i`` " <> line })]
+          |> list.append([""])
           |> string.join("\n")
         _ -> gemtext_line_to_gopher_line(line)
       }
@@ -74,6 +68,7 @@ fn gopher_link_line(to, description) {
 
 pub fn gemtext_line_to_gopher_line(line: Gemtext) -> String {
   case line {
+    gemtext.Text("") -> ""
     gemtext.Text(text) -> { "i" <> text } |> terminate_text_line
     gemtext.Link(to, description) ->
       case description {
@@ -83,8 +78,8 @@ pub fn gemtext_line_to_gopher_line(line: Gemtext) -> String {
     gemtext.Heading(text, depth) ->
       { "i" <> list.repeat("#", depth) |> string.join("") <> " " <> text }
       |> terminate_text_line
-    gemtext.ListLine(text) -> { "i* " <> text } |> terminate_text_line
-    gemtext.BlockquoteLine(text) -> { "i> " <> text } |> terminate_text_line
-    _ -> ""
+    gemtext.ListItem(text) -> { "i* " <> text } |> terminate_text_line
+    gemtext.Quote(text) -> { "i> " <> text } |> terminate_text_line
+    gemtext.Preformatted(_) -> ""
   }
 }
