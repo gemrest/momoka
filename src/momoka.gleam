@@ -45,8 +45,11 @@ fn handle_message(config, message, connection: glisten.Connection(a)) {
     Ok(selector) -> proxy.respond(config, selector)
     Error(Nil) -> gopher.error_menu("The selector is not valid UTF-8.")
   }
-  let assert Ok(_) = glisten.send(connection, bytes_tree.from_string(response))
-  let assert Ok(_) = transport.shutdown(connection.transport, connection.socket)
+
+  // A client that disconnects early has nothing left to receive, so these
+  // failures need no handling.
+  let _ = glisten.send(connection, bytes_tree.from_string(response))
+  let _ = transport.shutdown(connection.transport, connection.socket)
 
   io.println(
     "request: "
