@@ -12,9 +12,9 @@ language. It's designed to be small and simple.
 
 <br>
 
-For reference of accuracy, here is a screenshot of the
-[Lagrange](https://gmi.skyjake.fi/lagrange/) client displaying both the Gopher
-and the Gemini responses side-by-side. It's **literally** the same output.
+For reference, here is a screenshot of the
+[Lagrange](https://gmi.skyjake.fi/lagrange/) client displaying the Gopher and
+Gemini responses side by side.
 
 <p align="center">
   <br>
@@ -60,7 +60,10 @@ Here are a few examples.
 - [`gopher://fuwn.me/1/proxy/geminiprotocol.net`](gopher://fuwn.me/1/proxy/geminiprotocol.net)
   => [`gemini://geminiprotocol.net`](gemini://geminiprotocol.net)
 - [`gopher://fuwn.me/1/proxy/fuwn.me/index2`](gopher://fuwn.me/1/proxy/fuwn.me/index2)
-  => [`gemini://fuwn.me/index2`](`gemini://fuwn.me/index2`)
+  => [`gemini://fuwn.me/index2`](gemini://fuwn.me/index2)
+
+Links to Gemini pages, including relative links, are rewritten to route back
+through Momoka, so browsing stays within Gopher.
 
 ### Configuration
 
@@ -68,7 +71,8 @@ Momoka contains three environment variables that can be set to your liking.
 
 - `ROOT` – The root Gemini capsule to proxy for top-level requests (defaults to
   `fuwn.me`)
-- `PORT` – The port to listen on for Gopher clients (defaults to `70`)
+- `PORT` – The port to listen on for Gopher clients (defaults to `70`; Momoka
+  exits on startup if it is not an integer)
 - `GEMINI_PROXY` – A raw-Gemtext producing Gemini-to-HTTP proxy. (defaults to
   the [fuwn.me](https://fuwn.me)
   [September](https://github.com/gemrest/september) instance)
