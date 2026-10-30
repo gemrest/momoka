@@ -63,7 +63,8 @@ Here are a few examples.
   => [`gemini://fuwn.me/index2`](gemini://fuwn.me/index2)
 
 Links to Gemini pages, including relative links, are rewritten to route back
-through Momoka, so browsing stays within Gopher.
+through Momoka, so browsing stays within Gopher. Pages that ask for input, like
+search engines, become Gopher search items.
 
 Momoka speaks Gemini directly, so it needs outbound access to port 1965. Most
 capsules use self-signed certificates, so Momoka does not verify them.

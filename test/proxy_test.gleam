@@ -30,6 +30,11 @@ pub fn proxied_capsule_test() {
   |> should.equal(Ok("gemini://geminiprotocol.net/docs"))
 }
 
+pub fn search_selector_test() {
+  capsule_url("/proxy/kennedy.gemi.dev/search\tgleam language")
+  |> should.equal(Ok("gemini://kennedy.gemi.dev/search?gleam%20language"))
+}
+
 pub fn unsupported_selector_test() {
   capsule_url("index2")
   |> should.equal(Error(Nil))

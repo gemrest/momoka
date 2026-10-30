@@ -35,15 +35,26 @@ pub fn respond(config: Config, selector: String) -> String {
   }
 }
 
+/// Maps a Gopher selector to the Gemini URL it proxies. Gopher search clients
+/// append a tab and the search terms, which become the Gemini query.
 pub fn capsule_url(config: Config, selector: String) -> Result(Uri, Nil) {
-  let location = case selector {
-    "" -> Ok(config.root_capsule)
-    "/proxy/" <> capsule -> Ok(capsule)
-    "/" <> path -> Ok(config.root_capsule <> "/" <> path)
-    _ -> Error(Nil)
-  }
+  case string.split_once(selector, "\t") {
+    Ok(#(selector, search)) -> {
+      use url <- result.map(capsule_url(config, selector))
 
-  result.try(location, fn(location) { uri.parse("gemini://" <> location) })
+      uri.Uri(..url, query: Some(uri.percent_encode(search)))
+    }
+    Error(Nil) -> {
+      let location = case selector {
+        "" -> Ok(config.root_capsule)
+        "/proxy/" <> capsule -> Ok(capsule)
+        "/" <> path -> Ok(config.root_capsule <> "/" <> path)
+        _ -> Error(Nil)
+      }
+
+      result.try(location, fn(location) { uri.parse("gemini://" <> location) })
+    }
+  }
 }
 
 fn request_following_redirects(
@@ -82,8 +93,11 @@ fn render_response(
       |> list.map(route_link(config, url, _))
       |> gopher.gemtext_to_gopher
     }
-    gemini.Input(prompt) ->
-      Error("The capsule asks for input, which is not supported: " <> prompt)
+    gemini.Input(prompt) -> {
+      let search = "/7" <> selector(config, uri.Uri(..url, query: None))
+
+      Ok(gopher.gemtext_to_gopher([gemtext.Link(search, Some(prompt))]))
+    }
     gemini.Redirect(_) -> Error("The capsule redirected too many times.")
     gemini.Failure(status:, message:) ->
       Error(
