@@ -53,7 +53,7 @@ pub fn absolute_link_test() {
 
 pub fn local_link_test() {
   render("=> /index2\n")
-  |> should.equal("h/index2\tURL:/1/index2\tnull.host\t70\r\n.\r\n")
+  |> should.equal("h/index2\tURL:/index2\tnull.host\t70\r\n.\r\n")
 }
 
 pub fn error_menu_test() {

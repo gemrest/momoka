@@ -49,10 +49,6 @@ fn info_line(text: String) -> String {
 }
 
 fn link_line(to: String, title: String) -> String {
-  let selector = case to {
-    "/" <> _ -> "/1" <> to
-    _ -> to
-  }
   let host = case uri.parse(to) {
     Ok(uri.Uri(host: Some(host), ..)) -> host
     _ -> null_host
@@ -61,7 +57,7 @@ fn link_line(to: String, title: String) -> String {
   "h"
   <> escape_field(title)
   <> "\tURL:"
-  <> selector
+  <> to
   <> "\t"
   <> host
   <> "\t"
