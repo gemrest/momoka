@@ -1,85 +1,75 @@
 import gemtext/gemtext.{type Gemtext}
+import gleam/int
 import gleam/list
-import gleam/option.{None, Some}
+import gleam/option.{Some}
 import gleam/string
+import gleam/uri
 
-pub fn trim_line_ending(line) {
+pub const default_port = 70
+
+const null_host = "null.host"
+
+pub fn trim_line_ending(line: String) -> String {
   line
   |> string.replace("\n", "")
   |> string.replace("\r", "")
 }
 
-pub fn terminate_text_line(line) {
-  line <> "\tnull.host\t1\t70"
+pub fn gemtext_to_gopher(document: List(Gemtext)) -> String {
+  document
+  |> list.flat_map(gemtext_to_menu_lines)
+  |> menu
 }
 
-pub fn gemtext_to_gopher(gemtext: List(Gemtext)) -> String {
-  {
-    gemtext
-    |> list.map(fn(line) {
-      case line {
-        gemtext.Preformatted(lines) ->
-          ["", ..list.map(lines, fn(line) { "i`` " <> line })]
-          |> list.append([""])
-          |> string.join("\n")
-        _ -> gemtext_line_to_gopher_line(line)
-      }
-    })
-    |> string.join("\r\n")
-    <> "."
-  }
-  |> string.replace("\r\n\r\n.", "\r\n.")
-  |> string.split("\r\n")
-  |> list.map(fn(line) {
-    case line {
-      "" -> "i" |> terminate_text_line
-      _ -> line
-    }
-  })
-  |> string.join("\r\n")
+pub fn error_menu(message: String) -> String {
+  menu([info_line("An error has occurred: " <> message)])
 }
 
-fn extract_domain_from_url(url: String) -> String {
-  case string.split(url, "://") {
-    [_, rest] -> {
-      case string.split(rest, "/") {
-        [domain, _] -> domain
-        _ -> rest
-      }
-    }
-    _ -> "null.host"
-  }
+fn menu(lines: List(String)) -> String {
+  string.concat(list.map(lines, fn(line) { line <> "\r\n" })) <> ".\r\n"
 }
 
-fn gopher_link_line(to, description) {
-  "h"
-  <> description
-  <> "\tURL:"
-  <> {
-    case string.starts_with(to, "/") {
-      True -> "/1" <> to
-      False -> to
-    }
-  }
-  <> "\t"
-  <> extract_domain_from_url(to)
-  <> "\t70"
-}
-
-pub fn gemtext_line_to_gopher_line(line: Gemtext) -> String {
+fn gemtext_to_menu_lines(line: Gemtext) -> List(String) {
   case line {
-    gemtext.Text("") -> ""
-    gemtext.Text(text) -> { "i" <> text } |> terminate_text_line
-    gemtext.Link(to, description) ->
-      case description {
-        Some(description) -> gopher_link_line(to, description)
-        None -> gopher_link_line(to, to)
-      }
-    gemtext.Heading(text, depth) ->
-      { "i" <> list.repeat("#", depth) |> string.join("") <> " " <> text }
-      |> terminate_text_line
-    gemtext.ListItem(text) -> { "i* " <> text } |> terminate_text_line
-    gemtext.Quote(text) -> { "i> " <> text } |> terminate_text_line
-    gemtext.Preformatted(_) -> ""
+    gemtext.Text(text) -> [info_line(text)]
+    gemtext.Link(to, Some(title)) -> [link_line(to, title)]
+    gemtext.Link(to, _) -> [link_line(to, to)]
+    gemtext.Heading(text, depth) -> [
+      info_line(string.repeat("#", depth) <> " " <> text),
+    ]
+    gemtext.ListItem(text) -> [info_line("* " <> text)]
+    gemtext.Quote(text) -> [info_line("> " <> text)]
+    gemtext.Preformatted(lines) ->
+      list.map(lines, fn(line) { info_line("`` " <> line) })
   }
+}
+
+fn info_line(text: String) -> String {
+  "i" <> escape_field(text) <> "\t\t" <> null_host <> "\t1"
+}
+
+fn link_line(to: String, title: String) -> String {
+  let selector = case to {
+    "/" <> _ -> "/1" <> to
+    _ -> to
+  }
+  let host = case uri.parse(to) {
+    Ok(uri.Uri(host: Some(host), ..)) -> host
+    _ -> null_host
+  }
+
+  "h"
+  <> escape_field(title)
+  <> "\tURL:"
+  <> selector
+  <> "\t"
+  <> host
+  <> "\t"
+  <> int.to_string(default_port)
+}
+
+// Tabs separate Gopher menu fields, so any inside the display text would shift
+// the selector, host, and port.
+fn escape_field(text: String) -> String {
+  string.replace(text, "\t", "    ")
 }
