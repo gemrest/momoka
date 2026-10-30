@@ -1,6 +1,8 @@
 import gemtext/parse
 import gleam/http/request
 import gleam/httpc
+import gleam/int
+import gleam/io
 import gleam/result
 import gleam/string
 import gopher
@@ -10,23 +12,51 @@ pub type Config {
 }
 
 pub fn respond(config: Config, selector: String) -> String {
-  case result.try(capsule_url(config, selector), request.to) {
-    Ok(request) -> {
-      case httpc.send(request.set_header(request, "user-agent", "momoka")) {
-        Ok(response) ->
-          gopher.gemtext_to_gopher(parse.parse_gemtext(response.body))
-        Error(error) -> gopher.error_menu(string.inspect(error))
-      }
-    }
-    Error(error) -> gopher.error_menu(string.inspect(error))
+  case fetch_gemtext(config, selector) {
+    Ok(gemtext) -> gopher.gemtext_to_gopher(parse.parse_gemtext(gemtext))
+    Error(message) -> gopher.error_menu(message)
   }
 }
 
-pub fn capsule_url(config: Config, selector: String) -> Result(String, Nil) {
+fn fetch_gemtext(config: Config, selector: String) -> Result(String, String) {
+  use capsule <- result.try(
+    capsule_location(config, selector)
+    |> result.replace_error("The selector is not supported."),
+  )
+  use request <- result.try(
+    request.to(config.gemini_proxy <> capsule)
+    |> result.replace_error("The capsule address is not valid."),
+  )
+  use response <- result.try(
+    request
+    |> request.set_header("user-agent", "momoka")
+    |> httpc.send
+    |> result.map_error(fn(error) {
+      io.println("upstream error: " <> string.inspect(error))
+
+      "The capsule could not be reached."
+    }),
+  )
+
+  case response.status {
+    200 -> Ok(response.body)
+    status ->
+      Error(
+        "The capsule responded with HTTP status "
+        <> int.to_string(status)
+        <> ".",
+      )
+  }
+}
+
+pub fn capsule_location(
+  config: Config,
+  selector: String,
+) -> Result(String, Nil) {
   case selector {
-    "" -> Ok(config.gemini_proxy <> config.root_capsule)
-    "/proxy/" <> capsule -> Ok(config.gemini_proxy <> capsule)
-    "/" <> path -> Ok(config.gemini_proxy <> config.root_capsule <> "/" <> path)
+    "" -> Ok(config.root_capsule)
+    "/proxy/" <> capsule -> Ok(capsule)
+    "/" <> path -> Ok(config.root_capsule <> "/" <> path)
     _ -> Error(Nil)
   }
 }
