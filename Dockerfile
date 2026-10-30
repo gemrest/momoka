@@ -1,4 +1,6 @@
-FROM ghcr.io/gleam-lang/gleam:v1.19.2-erlang-alpine AS build
+# BEAM bytecode runs on any architecture, so build natively instead of under
+# emulation, where the Erlang VM can crash.
+FROM --platform=$BUILDPLATFORM ghcr.io/gleam-lang/gleam:v1.19.2-erlang-alpine AS build
 
 WORKDIR /momoka/
 
