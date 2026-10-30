@@ -2,19 +2,15 @@
 
 > A Gemini-to-Gopher proxy that bridges the smolweb to even more smolweb
 
-Momoka is a [Gopher](https://www.rfc-editor.org/info/rfc1436) proxy that sits in
-between Gopher clients and [Gemini](https://fuwn.me/proxy/geminiprotocol.net/)
-servers. It translates any Gemini requests containing Gemtext into
-Gopher-compatible responses.
-
-Momoka is written in the functional [Gleam](https://gleam.run) programming
-language. It's designed to be small and simple.
+Momoka is a [Gopher](https://www.rfc-editor.org/info/rfc1436) server that
+proxies [Gemini](https://fuwn.me/proxy/geminiprotocol.net/) capsules. It fetches
+the Gemini page a Gopher client asks for and converts its Gemtext into a Gopher
+menu. Momoka is written in [Gleam](https://gleam.run).
 
 <br>
 
-For reference, here is a screenshot of the
-[Lagrange](https://gmi.skyjake.fi/lagrange/) client displaying the Gopher and
-Gemini responses side by side.
+The screenshot below shows the [Lagrange](https://gmi.skyjake.fi/lagrange/)
+client displaying the Gopher and Gemini versions of a page side by side.
 
 <p align="center">
   <br>
@@ -23,8 +19,7 @@ Gemini responses side by side.
 
 ## Usage
 
-If you'd like to test out a production deployment of Momoka, you can visit
-[`gopher://fuwn.me:70/1`](gopher://fuwn.me:70/1).
+A public instance runs at [`gopher://fuwn.me:70/1`](gopher://fuwn.me:70/1).
 
 ### Local
 
@@ -44,8 +39,8 @@ docker run -p '70:70' --rm fuwn/momoka:latest
 
 ### Proxy
 
-By default, top-level requests, like `gopher://fuwn.me/1`, are proxied to
-their mapped Gemini equivalents. Here are a few examples.
+Momoka maps top-level requests, like `gopher://fuwn.me/1`, to the same path on
+the root capsule. For example:
 
 - [`gopher://fuwn.me`](gopher://fuwn.me) =>
   [`gemini://fuwn.me`](gemini://fuwn.me)
@@ -54,29 +49,27 @@ their mapped Gemini equivalents. Here are a few examples.
 - [`gopher://fuwn.me/1/index2`](gopher://fuwn.me/1/index2) =>
   [`gemini://fuwn.me/index2`](gemini://fuwn.me/index2)
 
-Prepending `/proxy/` to the path will allow you to proxy any Gemini server.
-Here are a few examples.
+To reach any other capsule, prefix its address with `/proxy/`. For example:
 
 - [`gopher://fuwn.me/1/proxy/geminiprotocol.net`](gopher://fuwn.me/1/proxy/geminiprotocol.net)
   => [`gemini://geminiprotocol.net`](gemini://geminiprotocol.net)
 - [`gopher://fuwn.me/1/proxy/fuwn.me/index2`](gopher://fuwn.me/1/proxy/fuwn.me/index2)
   => [`gemini://fuwn.me/index2`](gemini://fuwn.me/index2)
 
-Links to Gemini pages, including relative links, are rewritten to route back
-through Momoka, so browsing stays within Gopher. Pages that ask for input, like
-search engines, become Gopher search items.
+Momoka rewrites links to Gemini pages, including relative links, so following
+one fetches the page through Momoka. Pages that ask for input, like search
+engines, become Gopher search items.
 
 Momoka speaks Gemini directly, so it needs outbound access to port 1965. Most
 capsules use self-signed certificates, so Momoka does not verify them.
 
 ### Configuration
 
-Momoka contains two environment variables that can be set to your liking.
+Momoka reads two environment variables.
 
-- `ROOT` – The root Gemini capsule to proxy for top-level requests (defaults to
-  `fuwn.me`)
-- `PORT` – The port to listen on for Gopher clients (defaults to `70`; Momoka
-  exits on startup if it is not an integer)
+- `ROOT` is the capsule that top-level requests go to. It defaults to `fuwn.me`.
+- `PORT` is the port Momoka listens on. It defaults to `70`, and Momoka exits on
+  startup if the value is not an integer.
 
 ## GemRest
 
@@ -86,4 +79,4 @@ interested in Gemini, I'd recommend checking it out.
 
 ## Licence
 
-This project is licensed with the [GNU General Public License v3.0](./LICENSE).
+This project is licensed under the [GNU General Public License v3.0](./LICENSE).
