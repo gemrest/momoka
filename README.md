@@ -65,17 +65,17 @@ Here are a few examples.
 Links to Gemini pages, including relative links, are rewritten to route back
 through Momoka, so browsing stays within Gopher.
 
+Momoka speaks Gemini directly, so it needs outbound access to port 1965. Most
+capsules use self-signed certificates, so Momoka does not verify them.
+
 ### Configuration
 
-Momoka contains three environment variables that can be set to your liking.
+Momoka contains two environment variables that can be set to your liking.
 
 - `ROOT` – The root Gemini capsule to proxy for top-level requests (defaults to
   `fuwn.me`)
 - `PORT` – The port to listen on for Gopher clients (defaults to `70`; Momoka
   exits on startup if it is not an integer)
-- `GEMINI_PROXY` – A raw-Gemtext producing Gemini-to-HTTP proxy. (defaults to
-  the [fuwn.me](https://fuwn.me)
-  [September](https://github.com/gemrest/september) instance)
 
 ## GemRest
 

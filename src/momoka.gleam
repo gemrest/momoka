@@ -12,15 +12,8 @@ import gopher
 import proxy
 
 pub fn main() {
-  // Momoka fetches Gemini content through a
-  // [September](https://github.com/gemrest/september) instance, which serves
-  // raw Gemtext over HTTPS, rather than speaking Gemini itself.
   let config =
-    proxy.Config(
-      root_capsule: envoy.get("ROOT") |> result.unwrap("fuwn.me"),
-      gemini_proxy: envoy.get("GEMINI_PROXY")
-        |> result.unwrap("https://fuwn.me/raw/"),
-    )
+    proxy.Config(root_capsule: envoy.get("ROOT") |> result.unwrap("fuwn.me"))
   let port = case envoy.get("PORT") {
     Ok(port) -> {
       let assert Ok(port) = int.parse(port) as "PORT must be an integer"
